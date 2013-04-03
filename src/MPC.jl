@@ -26,19 +26,14 @@ import
     Base.(&),
     Base.(|),
     Base.($),
-    Base.binomial,
-    Base.ceil,
     Base.cmp,
     Base.complex,
     Base.convert,
     Base.copysign,
     Base.div,
     Base.exponent,
-    Base.factorial,
     Base.fld,
     Base.floor,
-    Base.gcd,
-    Base.gcdx,
     Base.imag,
     Base.integer_valued,
     Base.isfinite,
@@ -49,9 +44,6 @@ import
     Base.min,
     Base.mod,
     Base.modf,
-    Base.ndigits,
-    Base.nextfloat,
-    Base.prevfloat,
     Base.promote_rule,
     Base.real,
     Base.rem,
@@ -139,17 +131,24 @@ MPCComplex(x::Rational) = MPCComplex(num(x)) / MPCComplex(den(x))
 # TODO: fix the precision support here
 convert{N,P}(::Type{MPCComplex{N,P}}, x::Rational) = MPCComplex(x) # to resolve ambiguity
 convert{N,P}(::Type{MPCComplex{N,P}}, x::Real) = MPCComplex(x)
+convert(::Type{MPCComplex}, x::Real) = MPCComplex(x)
 convert{N,P}(::Type{MPCComplex{N,P}}, x::Complex) = MPCComplex(x)
+convert(::Type{MPCComplex}, x::Complex) = MPCComplex(x)
 convert{N,P}(::Type{MPCComplex{N,P}}, x::ImaginaryUnit) = MPCComplex(x)
+convert(::Type{MPCComplex}, x::ImaginaryUnit) = MPCComplex(x)
 
 convert(::Type{Float64}, x::MPCComplex) = ccall((:mpc_get_d,:libmpc), Float64, (Ptr{Void},), x.mpc)
 convert(::Type{Float32}, x::MPCComplex) = ccall((:mpc_get_flt,:libmpc), Float32, (Ptr{Void},), x.mpc)
 #convert(::Type{FloatingPoint}, x::BigInt) = MPCComplex(x)
 
 promote_rule{T<:Real,N,P}(::Type{MPCComplex{N,P}}, ::Type{T}) = MPCComplex{N,P}
+promote_rule{T<:Real}(::Type{MPCComplex}, ::Type{T}) = MPCComplex
 promote_rule{T<:Real,N,P}(::Type{MPCComplex{N,P}}, ::Type{Complex{T}}) = MPCComplex{N,P}
+promote_rule{T<:Real}(::Type{MPCComplex}, ::Type{Complex{T}}) = MPCComplex
 promote_rule{T<:Number,N,P}(::Type{MPCComplex{N,P}}, ::Type{T}) = MPCComplex{N,P}
+promote_rule{T<:Number}(::Type{MPCComplex}, ::Type{T}) = MPCComplex
 promote_rule{N,P}(::Type{MPCComplex{N,P}}, ::Type{ImaginaryUnit}) = MPCComplex{N,P}
+promote_rule(::Type{MPCComplex}, ::Type{ImaginaryUnit}) = MPCComplex
 
 # TODO: Decide if overwriting the default BigFloat rule is good
 #promote_rule{T<:FloatingPoint}(::Type{BigInt},::Type{T}) = MPCComplex
