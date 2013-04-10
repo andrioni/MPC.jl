@@ -16,5 +16,7 @@ before_install:
 script:
     - julia -e "Pkg.init()"
     - mkdir -p ~/.julia/MPC
+    - mkdir -p ~/.julia/MPFR
+    - git clone git://github.com/andrioni/MPFR.jl.git MPFR
     - cp -R ./* ~/.julia/MPC/
     - julia ~/.julia/MPC/test/MPC_test.jl
