@@ -29,30 +29,18 @@ import
     Base.cmp,
     Base.complex,
     Base.convert,
-    Base.copysign,
     Base.div,
-    Base.exponent,
-    Base.fld,
-    Base.floor,
     Base.imag,
     Base.integer_valued,
     Base.isfinite,
     Base.isinf,
     Base.isnan,
-    Base.lcm,
-    Base.max,
-    Base.min,
-    Base.mod,
-    Base.modf,
     Base.promote_rule,
     Base.real,
-    Base.rem,
-    Base.round,
     Base.show,
     Base.showcompact,
     Base.sqrt,
-    Base.string,
-    Base.trunc
+    Base.string
 
 const ROUNDING_MODE = 0
 const DEFAULT_PRECISION = [53, 53]
@@ -267,13 +255,10 @@ function set_default_precision(x::Int, y::Int)
     DEFAULT_PRECISION[1], DEFAULT_PRECISION[end] = x, y
 end
 
-# function integer_valued(x::MPCComplex)
-#     return ccall((:mpc_integer_p, :libmpc), Int32, (Ptr{Void},), x.mpfr) != 0
-# end
-
 iscomplex(::MPCComplex) = true
 isfinite(x::MPCComplex) = isfinite(real(x)) && isfinite(imag(x))
 isinf(x::MPCComplex) = !isfinite(x)
+integer_valued(x::MPCComplex) = imag(x) == 0 && integer_valued(real(x))
 
 function with_precision(f::Function, precision::Integer)
     old_precision = get_default_precision()
@@ -282,16 +267,6 @@ function with_precision(f::Function, precision::Integer)
     set_default_precision(old_precision)
     return ret
 end
-
-# WARNING: it rounds to prec bits, and not to prec digits.
-# function round(x::MPCComplex, prec::Int)
-#     if prec < 2
-#         throw(DomainError())
-#     end
-#     z = MPCComplex(x)
-#     ccall((:mpc_prec_round, :libmpc), Int32, (Ptr{Void}, Int, Int32), z.mpfr, prec, ROUNDING_MODE)
-#     return z
-# end
 
 function imag{N,P}(x::MPCComplex{N,P})
     z = MPFRFloat{N}()

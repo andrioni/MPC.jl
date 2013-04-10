@@ -64,3 +64,6 @@ x = MPCComplex(12,42)
 @test (x + (2+ 1im)) == MPCComplex(14, 43)
 @test (x + 2 + 1im) == MPCComplex(14, 43)
 
+# integer_valued
+@test !integer_valued(MPCComplex(2,3))
+@test integer_valued(MPCComplex(2))
